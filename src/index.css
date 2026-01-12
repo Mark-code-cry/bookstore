@@ -1,0 +1,123 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 220 15% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 15% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 15% 15%;
+
+    --primary: 271 81% 56%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 220 15% 15%;
+
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 9% 46%;
+
+    --accent: 220 14% 96%;
+    --accent-foreground: 220 15% 15%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 271 81% 56%;
+
+    --radius: 0.75rem;
+
+    /* Custom tokens */
+    --rating: 45 93% 47%;
+    --success: 142 71% 45%;
+    --category-active: 271 81% 56%;
+    --category-inactive: 220 14% 96%;
+    --price: 220 15% 15%;
+    --shadow-card: 0 4px 12px -2px hsl(220 15% 15% / 0.08);
+    --shadow-modal: 0 25px 50px -12px hsl(220 15% 15% / 0.25);
+  }
+
+  .dark {
+    --background: 220 15% 8%;
+    --foreground: 220 14% 96%;
+
+    --card: 220 15% 12%;
+    --card-foreground: 220 14% 96%;
+
+    --popover: 220 15% 12%;
+    --popover-foreground: 220 14% 96%;
+
+    --primary: 271 81% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 15% 18%;
+    --secondary-foreground: 220 14% 96%;
+
+    --muted: 220 15% 18%;
+    --muted-foreground: 220 9% 60%;
+
+    --accent: 220 15% 18%;
+    --accent-foreground: 220 14% 96%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 15% 20%;
+    --input: 220 15% 20%;
+    --ring: 271 81% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+}
+
+@layer components {
+  .book-card {
+    @apply bg-card rounded-lg overflow-hidden shadow-card transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+  }
+
+  .category-pill {
+    @apply px-4 py-2 rounded-full text-sm font-medium transition-colors cursor-pointer;
+  }
+
+  .category-pill-active {
+    @apply bg-primary text-primary-foreground;
+  }
+
+  .category-pill-inactive {
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/80;
+  }
+
+  .rating-star {
+    @apply text-rating;
+  }
+
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+
+  .shadow-modal {
+    box-shadow: var(--shadow-modal);
+  }
+}
+
+@layer utilities {
+  .text-rating {
+    color: hsl(var(--rating));
+  }
+}
