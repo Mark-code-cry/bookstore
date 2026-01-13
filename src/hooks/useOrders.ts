@@ -66,9 +66,13 @@ export function useCreateOrder() {
     mutationFn: async (params: CreateOrderParams): Promise<Order> => {
       if (!user) throw new Error('Must be logged in to create an order');
 
+      const orderNumber = `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+
       const { data: order, error: orderError } = await supabase
         .from('orders')
         .insert({
+          user_id: user.id,
+          order_number: orderNumber,
           subtotal: params.subtotal,
           tax: params.tax,
           shipping_cost: params.shipping_cost,

@@ -1,6 +1,9 @@
 import { X, Minus, Plus, Trash2, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
+import { useCreateOrder } from '@/hooks/useOrders';
+import { useAuth } from '@/context/AuthContext';
+import { toast } from 'sonner';
 
 interface CartModalProps {
   isOpen: boolean;
@@ -8,7 +11,9 @@ interface CartModalProps {
 }
 
 export function CartModal({ isOpen, onClose }: CartModalProps) {
-  const { items, updateQuantity, removeFromCart, subtotal, isLoading } = useCart();
+  const { items, updateQuantity, removeFromCart, subtotal, isLoading, clearCart } = useCart();
+  const { isAuthenticated } = useAuth();
+  const createOrderMutation = useCreateOrder();
 
   if (!isOpen) return null;
 
@@ -17,9 +22,38 @@ export function CartModal({ isOpen, onClose }: CartModalProps) {
   const total = subtotal + tax + shipping;
   const freeShippingRemaining = Math.max(0, 50 - subtotal);
 
-  const handleCheckout = () => {
-    // Checkout functionality will be added later
-    onClose();
+  const handleCheckout = async () => {
+    if (items.length === 0) return;
+
+    if (!isAuthenticated) {
+      toast.error('Please log in to place an order');
+      onClose();
+      return;
+    }
+
+    try {
+      await createOrderMutation.mutateAsync({
+        subtotal,
+        tax,
+        shipping_cost: shipping,
+        total,
+        payment_method: 'credit_card', // Default payment method, could be made configurable
+        items: items.map(item => ({
+          book_id: item.book_id,
+          title: item.book?.title || 'Unknown Book',
+          author: item.book?.author || 'Unknown Author',
+          price: item.book?.price || 0,
+          quantity: item.quantity,
+        })),
+      });
+
+      toast.success('Order placed successfully!');
+      await clearCart();
+      onClose();
+    } catch (error) {
+      console.error('Checkout error:', error);
+      toast.error(`Failed to place order: ${error.message || 'Please try again.'}`);
+    }
   };
 
   return (
@@ -144,8 +178,13 @@ export function CartModal({ isOpen, onClose }: CartModalProps) {
               <span className="text-foreground">Total:</span>
               <span className="text-foreground">${total.toFixed(2)}</span>
             </div>
-            <Button className="w-full" size="lg" onClick={handleCheckout}>
-              Proceed to Checkout
+            <Button 
+              className="w-full" 
+              size="lg" 
+              onClick={handleCheckout}
+              disabled={createOrderMutation.isPending}
+            >
+              {createOrderMutation.isPending ? 'Processing...' : 'Proceed to Checkout'}
             </Button>
           </div>
         )}
